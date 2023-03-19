@@ -1,0 +1,34 @@
+//---------------------------------------------------------------------------
+
+#ifndef U_Text_edH
+#define U_Text_edH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include <Vcl.ComCtrls.hpp>
+#include <Vcl.Menus.hpp>
+#include <Vcl.Dialogs.hpp>
+//---------------------------------------------------------------------------
+class TText_editor : public TForm
+{
+__published:	// IDE-managed Components
+	TButton *Button1;
+	TLabel *Label1;
+	TButton *Button_save;
+	TOpenDialog *OpenDialog1;
+	TSaveDialog *SaveDialog1;
+	TMemo *Memo1;
+	void __fastcall Button1Click(TObject *Sender);
+	void __fastcall FormShow(TObject *Sender);
+	void __fastcall Button_saveClick(TObject *Sender);
+	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
+private:	// User declarations
+public:		// User declarations
+	__fastcall TText_editor(TComponent* Owner);
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TText_editor *Text_editor;
+//---------------------------------------------------------------------------
+#endif

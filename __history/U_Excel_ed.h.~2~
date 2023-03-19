@@ -1,0 +1,23 @@
+//---------------------------------------------------------------------------
+
+#ifndef U_Excel_edH
+#define U_Excel_edH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+//---------------------------------------------------------------------------
+class TExcel_editor : public TForm
+{
+__published:	// IDE-managed Components
+	TButton *Button1;
+	void __fastcall Button1Click(TObject *Sender);
+private:	// User declarations
+public:		// User declarations
+	__fastcall TExcel_editor(TComponent* Owner);
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TExcel_editor *Excel_editor;
+//---------------------------------------------------------------------------
+#endif

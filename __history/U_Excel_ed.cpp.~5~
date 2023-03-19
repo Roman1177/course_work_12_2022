@@ -1,0 +1,121 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#include <U_Main_form.h>
+
+#include "ComObj.hpp"
+#include <utilcls.h>
+
+#pragma hdrstop
+
+#include "U_Excel_ed.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma resource "*.dfm"
+TExcel_editor *Excel_editor;
+
+Variant excel_file;
+
+extern AnsiString send_addr_file_txt;
+//---------------------------------------------------------------------------
+__fastcall TExcel_editor::TExcel_editor(TComponent* Owner)
+	: TForm(Owner)
+{
+}
+//---------------------------------------------------------------------------
+void __fastcall TExcel_editor::Button1Click(TObject *Sender)
+{
+	this->Hide();
+	MainForm->Show();
+}
+//---------------------------------------------------------------------------
+void __fastcall TExcel_editor::FormShow(TObject *Sender)
+{
+	AnsiString buffer;
+	AnsiString exit_row;
+
+	//StringGrid1->RowCount = 0;
+
+	int row =0;
+	excel_file = CreateOleObject("EXCEL.Application");
+	excel_file.OlePropertyGet("Workbooks").OlePropertyGet("Open",WideString(send_addr_file_txt));
+
+
+	do{
+		row++;
+		StringGrid1->RowCount += 1;
+
+		for(int i = 1; i <= 3;i++){
+			buffer = excel_file.OlePropertyGet("Cells", row, i);
+
+			if(row == 1){
+				StringGrid1->Cells[i-1][0] = buffer;    //шапка таблицы
+				exit_row = StringGrid1->Cells[0][0];     //костыль
+			}else{
+				StringGrid1->Cells[i-1][row-1] = buffer;
+				exit_row = StringGrid1->Cells[0][row-1];
+			}
+		}
+
+	}while(exit_row != "");
+
+	StringGrid1->RowCount -= 2;     //удаление лишних строк
+
+	//excel_file.OleProcedure("Quit");    //возможно закрытие файла нужно будет перенести в сохранение
+	//excel_file = Unassigned;
+
+	//StringGrid1->Options = StringGrid1->Options << goEditing;
+	MainForm->Hide();
+	//StringGrid1->EditorMode = true;
+
+	//открываем файл экселя
+    //заполняем стринг грид
+}
+//---------------------------------------------------------------------------
+void __fastcall TExcel_editor::Button2Click(TObject *Sender)
+{
+	//сохраняем файл по предыдущему месту
+
+}
+//---------------------------------------------------------------------------
+void __fastcall TExcel_editor::FormClose(TObject *Sender, TCloseAction &Action)
+{
+	//запрос на сохранение файла, закрытие редактора
+	this->Hide();
+	MainForm->Show();
+}
+//---------------------------------------------------------------------------
+void __fastcall TExcel_editor::StringGrid1SelectCell(TObject *Sender, int ACol, int ARow,
+          bool &CanSelect)
+{
+	 StringGrid1->Options << goEditing;
+}
+//---------------------------------------------------------------------------
+void save_edit_file(){
+
+	AnsiString str_1;
+	int number =0;
+	int size =0;
+	int index = MainForm->ListBox_qu_1->Count;  //получаем количество строк
+
+    report_cell = report_sheets.OlePropertyGet("Item",1).OlePropertyGet("Cells");
+
+	for(int i =0; i < index;i++){
+
+	   AnsiString buf = MainForm->ListBox_qu_1->Items->Strings[i];
+
+	   number = buf.Pos(" ");
+	   size = buf.Length();
+
+	   str_1 = buf.SubString(0,number);
+	   report_cell.OlePropertyGet("Item", _row , _col).OlePropertySet("Value",WideString(str_1));
+	   _col++;
+
+	   str_1 = buf.SubString(number,size);
+	   report_cell.OlePropertyGet("Item", _row , _col).OlePropertySet("Value",WideString(str_1));
+	   _row++;
+	   _col = 1;
+	}
+
+	report_file_1.OlePropertyGet("WorkBooks",1).OleProcedure(L"SaveAs",WideString(file)); //сохранение файла по адресу
+}

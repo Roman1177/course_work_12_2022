@@ -1,0 +1,27 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "Unit2.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma resource "*.dfm"
+Tsecond_form *second_form;
+//---------------------------------------------------------------------------
+__fastcall Tsecond_form::Tsecond_form(TComponent* Owner)
+	: TForm(Owner)
+{
+}
+//---------------------------------------------------------------------------
+void __fastcall Tsecond_form::Button1Click(TObject *Sender)
+{
+	mainform->Show();
+	this->Close();
+}
+//---------------------------------------------------------------------------
+void __fastcall Tsecond_form::FormClose(TObject *Sender, TCloseAction &Action)
+{
+Application->Terminate();
+}
+//---------------------------------------------------------------------------

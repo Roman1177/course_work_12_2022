@@ -1,0 +1,21 @@
+//---------------------------------------------------------------------------
+
+#ifndef U_Reference_formH
+#define U_Reference_formH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+//---------------------------------------------------------------------------
+class TRef_form : public TForm
+{
+__published:	// IDE-managed Components
+private:	// User declarations
+public:		// User declarations
+	__fastcall TRef_form(TComponent* Owner);
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TRef_form *Ref_form;
+//---------------------------------------------------------------------------
+#endif

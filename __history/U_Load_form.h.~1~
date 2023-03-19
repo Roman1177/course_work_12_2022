@@ -1,0 +1,22 @@
+//---------------------------------------------------------------------------
+
+#ifndef U_fun_DELETE_ITH
+#define U_fun_DELETE_ITH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+//---------------------------------------------------------------------------
+class TLoad_form : public TForm
+{
+__published:	// IDE-managed Components
+	TLabel *Label1;
+private:	// User declarations
+public:		// User declarations
+	__fastcall TLoad_form(TComponent* Owner);
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TLoad_form *Load_form;
+//---------------------------------------------------------------------------
+#endif

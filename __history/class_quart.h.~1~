@@ -1,0 +1,71 @@
+//---------------------------------------------------------------------------
+
+#ifndef class_quartH
+#define class_quartH
+
+#include "ComObj.hpp"
+#include <utilcls.h>
+
+//#include <string>
+using namespace std;
+
+class Quarter{
+
+private:
+
+	bool flag_st; 		      	//флаг состояния
+
+	int column;              	//колонки
+	int row;            	    //строки
+	int max_work;               //Максимальнная работа (Максимальный вес рюкзака)
+	int counter_row;            //счетчик длинны
+	int max_value;              //Максимальная прибыль
+
+	AnsiString file_address;    //адрес покоторому хранится файл
+
+	Variant quart;              //  ???????
+
+public:
+
+	Quarter(){
+
+		flag_st = false;
+		column =0;
+		row = 0;
+		max_work = 0;
+		file_address = "";
+		counter_row =0;
+		max_value =0;
+	}
+
+	//---Сеттеры---
+	void set_row(int const val);
+	void set_max_value(int const val);
+	void set_flag(bool const fg);
+	void set_address(AnsiString const addr);
+	void set_quart(Variant const val);
+	void set_max_work(int const val);
+
+	//---Геттеры---
+	int get_row();
+	int get_max_value();
+	int get_counter_row();
+	int get_col();
+	int get_max_work();
+	bool get_flag();
+	AnsiString get_file_addr();
+	Variant get_quart();
+
+	//---Спец. методы---
+	 void inc_row();
+	 void inc_counter_row();
+     void exit_Excel();
+	 void dec_row();
+	 void delete_row();
+};
+
+
+
+
+//---------------------------------------------------------------------------
+#endif

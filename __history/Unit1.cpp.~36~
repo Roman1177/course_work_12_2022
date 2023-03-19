@@ -1,0 +1,1172 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#include <Unit2.h>
+#include <fstream>
+#include <string>
+#pragma hdrstop
+
+#include "Unit1.h"
+  #include "class_quart.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma resource "*.dfm"
+#pragma execution_character_set("utf-8")    //для работы с файлами UTF-8    ПОХОДУ НЕ РАБОТАЕТ
+TMainForm *MainForm;
+
+Quarter quarter_1;
+Quarter quarter_2;
+Quarter quarter_3;
+Quarter quarter_4;
+
+
+void open_file(Quarter &quart,int var);
+void save_file();
+void edit_file(int);
+
+void Clear_form_data();
+
+bool alphabet_check(string);
+bool max_val_check(int);
+
+int box(int W, int *w, int *v, int n);
+int dynamic_prog_method(int,const int,const int);
+int enumeration_method(int,int,int);
+
+
+//---------------------------------------------------------------------------
+__fastcall TMainForm::TMainForm(TComponent* Owner)
+	: TForm(Owner)
+{
+}
+//---------------------------------------------------------------------------
+void __fastcall TMainForm::FormShow(TObject *Sender)
+{
+	MainForm->StringGrid1->Cells[0][0] = "Название";
+	MainForm->StringGrid1->Cells[1][0] = "Объем работ";
+	MainForm->StringGrid1->Cells[2][0] = "Прибыль";
+
+	MainForm->StringGrid2->Cells[0][0] = "Название";
+	MainForm->StringGrid2->Cells[1][0] = "Объем работ";
+	MainForm->StringGrid2->Cells[2][0] = "Прибыль";
+
+	MainForm->StringGrid3->Cells[0][0] = "Название";
+	MainForm->StringGrid3->Cells[1][0] = "Объем работ";
+	MainForm->StringGrid3->Cells[2][0] = "Прибыль";
+
+	MainForm->StringGrid4->Cells[0][0] = "Название";
+	MainForm->StringGrid4->Cells[1][0] = "Объем работ";
+	MainForm->StringGrid4->Cells[2][0] = "Прибыль";
+
+}
+//---------------------------------------------------------------------------
+void __fastcall TMainForm::Open1Click(TObject *Sender)
+{
+	open_file(quarter_1,1);
+}
+//---------------------------------------------------------------------------
+void __fastcall TMainForm::Open2Click(TObject *Sender)
+{
+	open_file(quarter_2,2);
+}
+//---------------------------------------------------------------------------
+void __fastcall TMainForm::Open3Click(TObject *Sender)
+{
+	open_file(quarter_3,3);
+}
+//---------------------------------------------------------------------------
+void __fastcall TMainForm::Open4Click(TObject *Sender)
+{
+	open_file(quarter_4,4);
+}
+//---------------------------------------------------------------------------
+void __fastcall TMainForm::N2Click(TObject *Sender)
+{
+	edit_file(1);
+}
+//---------------------------------------------------------------------------
+void __fastcall TMainForm::N21Click(TObject *Sender)
+{
+	edit_file(2);
+}
+//---------------------------------------------------------------------------
+void __fastcall TMainForm::N31Click(TObject *Sender)
+{
+	edit_file(3);
+}
+//---------------------------------------------------------------------------
+void __fastcall TMainForm::N41Click(TObject *Sender)
+{
+	edit_file(4);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::Button1Click(TObject *Sender)
+{
+	save_file();
+
+	//сохранение файоа
+	//выбор типа данных для сохранения
+	//создание файла
+	//запись данных в файл
+	//сохранение файла
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::Button5Click(TObject *Sender)
+{
+	Clear_form_data(); //удаление всех данных сформы   ????????
+
+    int result =0;
+
+	switch(MainForm->RadioGroup1->ItemIndex){
+		case 0:{
+			if(quarter_1.get_flag() == true){
+				if(max_val_check(1)){
+					quarter_1.set_max_work(MainForm->Edit_qu_1->Text.ToDouble());   //получаем максимальный вес рюкзака
+					result = dynamic_prog_method(1,quarter_1.get_row(),quarter_1.get_max_work());
+					quarter_1.set_max_value(result);
+				}else{
+					Application->MessageBox(L"Введите максимальный объем работы в 1 квартале \n(не более 91-го рабочего дня)", L"Ошибка", MB_OK);
+				}
+			}
+
+			if(quarter_2.get_flag() == true ){
+				if(max_val_check(2)){
+					quarter_2.set_max_work(MainForm->Edit_qu_2->Text.ToDouble());   //получаем максимальный вес рюкзака
+					result = dynamic_prog_method(2,quarter_2.get_row(),quarter_2.get_max_work());
+					quarter_2.set_max_value(result);
+				}else{
+					Application->MessageBox(L"Введите максимальный объем работы в 2 квартале \n(не более 91-го рабочего дня)", L"Ошибка", MB_OK);
+				}
+			}
+			if(quarter_3.get_flag() == true ){
+				if(max_val_check(3)){
+					quarter_3.set_max_work(MainForm->Edit_qu_3->Text.ToDouble());   //получаем максимальный вес рюкзака
+					result = dynamic_prog_method(3,quarter_3.get_row(),quarter_3.get_max_work());
+					quarter_3.set_max_value(result);
+				}else{
+					Application->MessageBox(L"Введите максимальный объем работы в 3 квартале \n(не более 91-го рабочего дня)", L"Ошибка", MB_OK);
+				}
+			}
+			if(quarter_4.get_flag() == true ){
+				if(max_val_check(4)){
+					quarter_4.set_max_work(MainForm->Edit_qu_4->Text.ToDouble());   //получаем максимальный вес рюкзака
+					result = dynamic_prog_method(4,quarter_4.get_row(),quarter_4.get_max_work());
+					quarter_4.set_max_value(result);
+				}else{
+					Application->MessageBox(L"Введите максимальный объем работы в 4 квартале \n(не более 91-го рабочего дня)", L"Ошибка", MB_OK);
+				}
+			}
+			break;
+		}
+		case 1:{//	enumeration_method();
+
+        if(quarter_1.get_flag() == true){
+				if(max_val_check(1)){
+					quarter_1.set_max_work(MainForm->Edit_qu_1->Text.ToDouble());   //получаем максимальный вес рюкзака
+					result = enumeration_method(1,quarter_1.get_row(),quarter_1.get_max_work());
+					quarter_1.set_max_value(result);
+				}else{
+					Application->MessageBox(L"Введите максимальный объем работы в 1 квартале \n(не более 91-го рабочего дня)", L"Ошибка", MB_OK);
+				}
+			}
+
+			if(quarter_2.get_flag() == true ){
+				if(max_val_check(2)){
+					quarter_2.set_max_work(MainForm->Edit_qu_2->Text.ToDouble());   //получаем максимальный вес рюкзака
+					result = enumeration_method(2,quarter_2.get_row(),quarter_2.get_max_work());
+					quarter_2.set_max_value(result);
+				}else{
+					Application->MessageBox(L"Введите максимальный объем работы в 2 квартале \n(не более 91-го рабочего дня)", L"Ошибка", MB_OK);
+				}
+			}
+			if(quarter_3.get_flag() == true ){
+				if(max_val_check(3)){
+					quarter_3.set_max_work(MainForm->Edit_qu_3->Text.ToDouble());   //получаем максимальный вес рюкзака
+					result = enumeration_method(3,quarter_3.get_row(),quarter_3.get_max_work());
+					quarter_3.set_max_value(result);
+				}else{
+					Application->MessageBox(L"Введите максимальный объем работы в 3 квартале \n(не более 91-го рабочего дня)", L"Ошибка", MB_OK);
+				}
+			}
+			if(quarter_4.get_flag() == true ){
+				if(max_val_check(4)){
+					quarter_4.set_max_work(MainForm->Edit_qu_4->Text.ToDouble());   //получаем максимальный вес рюкзака
+					result = enumeration_method(4,quarter_4.get_row(),quarter_4.get_max_work());
+					quarter_4.set_max_value(result);
+				}else{
+					Application->MessageBox(L"Введите максимальный объем работы в 4 квартале \n(не более 91-го рабочего дня)", L"Ошибка", MB_OK);
+				}
+			}
+
+			break;
+		}
+		case 2:{
+		 //	jadniy_metod();
+			break;
+		}
+	}
+
+	result = quarter_1.get_max_value() + quarter_2.get_max_value() + quarter_3.get_max_value() + quarter_4.get_max_value();
+
+	MainForm->Edit_result->Text = result;
+
+	//проверка на выбор алгоритма
+	//проверка корректности и наличия первичных данных
+	//выбор алгоритма
+}
+//---------------------------------------------------------------------------
+
+int dynamic_prog_method(int var,const int  counter_val,const int  weight_max){
+
+//*******************
+	//StringGrid1->Cells[столбцы][строки]
+	//counter_val       --количество элементов
+	//weight_max        --максимальная вместимасть
+//*******************
+
+	int weight[weight_max];          // массив веса
+	int value[counter_val];          // массив ценности
+
+	int m_weight = weight_max + 1;
+	int m_val = counter_val + 1;
+
+	double matrix[m_val][m_weight];    //возможно нужно переделать под динамический массив
+
+	//При нахождении ошибки в каком либо из столбцов (вес/цена) - занулить нужно оба (ошибка) -- ПЕРЕДЕЛАТЬ
+	//Может на этапе открытия файла сразу создавать массивы в классах???????
+
+	switch(var){
+		case 1:{
+			for(int i = 0; i < counter_val; ++i){
+				if(MainForm->StringGrid1->Cells[1][i+1] != ""){
+					weight[i] = MainForm->StringGrid1->Cells[1][i+1].ToDouble();
+				}else{
+					weight[i] = 0;
+				}
+				if(MainForm->StringGrid1->Cells[2][i+1] != ""){
+					value[i] = MainForm->StringGrid1->Cells[2][i+1].ToDouble();
+				}else{
+					value[i] = 0;//ЗАНУЛЯЕМ ОШИБКУ
+				}
+			}
+			break;
+		}
+		case 2:{
+			for(int i = 0; i < counter_val; ++i){
+				if(MainForm->StringGrid2->Cells[1][i+1] != ""){
+					weight[i] = MainForm->StringGrid2->Cells[1][i+1].ToDouble();
+				}else{
+					weight[i] = 0;
+				}
+				if(MainForm->StringGrid2->Cells[2][i+1] != ""){
+					value[i] = MainForm->StringGrid2->Cells[2][i+1].ToDouble();
+				}else{
+					value[i] = 0;//ЗАНУЛЯЕМ ОШИБКУ
+				}
+			}
+			break;
+		}
+		case 3:{
+			for(int i = 0; i < counter_val; ++i){
+				if(MainForm->StringGrid3->Cells[1][i+1] != ""){
+					weight[i] = MainForm->StringGrid3->Cells[1][i+1].ToDouble();
+				}else{
+					weight[i] = 0;
+				}
+				if(MainForm->StringGrid3->Cells[2][i+1] != ""){
+					value[i] = MainForm->StringGrid3->Cells[2][i+1].ToDouble();
+				}else{
+					value[i] = 0;//ЗАНУЛЯЕМ ОШИБКУ
+				}
+			}
+			break;
+		}
+		case 4:{
+			for(int i = 0; i < counter_val; ++i){
+				if(MainForm->StringGrid4->Cells[1][i+1] != ""){
+					weight[i] = MainForm->StringGrid4->Cells[1][i+1].ToDouble();
+				}else{
+					weight[i] = 0;
+				}
+				if(MainForm->StringGrid4->Cells[2][i+1] != ""){
+					value[i] = MainForm->StringGrid4->Cells[2][i+1].ToDouble();
+				}else{
+					value[i] = 0;//ЗАНУЛЯЕМ ОШИБКУ
+				}
+			}
+			break;
+		}
+	}
+
+	for (int i = 0; i < m_val; i++) {
+		matrix[i][0] = 0;    //1 элемент каждой строки
+	}
+
+	for (int j = 0; j < m_weight; j++) {
+		matrix[0][j] = 0;    //1 зануляем первую строку
+	}
+
+
+	if(MainForm->RadioGroup2->ItemIndex == 0){  //штучный
+		for (int k = 1; k < m_val /*counter_val*/; ++k)
+		{
+			for (int s = 1; s < m_weight/*weight_max*/; ++s)
+			{
+				if (weight[k - 1] <= s) { //ОПИСАТЬЧТО СДЕСЬ ПРОИСХОДИТ
+					matrix[k][s] = max(matrix[k - 1][s], matrix[k - 1][s - weight[k - 1]] + value[k - 1]);
+				}
+				else{
+					matrix[k][s] = matrix[k - 1][s];
+				}
+			}
+		}
+
+	}else{                                      //серийный
+
+		for (int i = 0; i < counter_val; i++) {
+			for (int j = 0; j <= m_weight /*weight_max*/ ; j++) {
+
+				if (i - 1 < 0) {
+					matrix[i][j] = matrix[0][j];
+				}
+				else {
+					matrix[i][j] = matrix[i - 1][j];
+				}
+				if (weight[i] <= j) {
+					matrix[i][j] = max(matrix[i][j], matrix[i][j - weight[i]] + value[i]);
+				}
+			}
+		}
+	}
+
+	if(MainForm->RadioGroup2->ItemIndex == 0){   //формирование вывода результата при штучном производстве
+		int w = weight_max;
+		int counter =0;
+
+		for(int i = counter_val; i>0; i--){
+			if(matrix[i][w] !=  matrix[i-1][w]){
+
+				w -= weight[i-1];
+				switch(var){
+					case 1:{
+						AnsiString s1 = MainForm->StringGrid1->Cells[0][i] + " " + IntToStr(value[i-1]);
+						MainForm->ListBox_qu_1->Items->Add(s1);
+						MainForm->Edit_res_qu_1->Text = matrix[counter_val][weight_max];
+						break;
+					}
+					case 2:{
+						AnsiString s1 = MainForm->StringGrid2->Cells[0][i] + " " + IntToStr(value[i-1]);
+						MainForm->ListBox_qu_2->Items->Add(s1);
+						MainForm->Edit_res_qu_2->Text = matrix[counter_val][weight_max];
+						break;
+					}
+					case 3:{
+						AnsiString s1 = MainForm->StringGrid3->Cells[0][i] + " " + IntToStr(value[i-1]);
+						MainForm->ListBox_qu_3->Items->Add(s1);
+						MainForm->Edit_res_qu_3->Text = matrix[counter_val][weight_max];
+						break;
+					}
+					case 4:{
+						AnsiString s1 = MainForm->StringGrid4->Cells[0][i] + " " + IntToStr(value[i-1]);
+						MainForm->ListBox_qu_4->Items->Add(s1);
+						MainForm->Edit_res_qu_4->Text = matrix[counter_val][weight_max];
+						break;
+					}
+
+				}
+			}
+
+		}
+
+		return (matrix[counter_val][weight_max]);
+	}else{
+
+		int w = weight_max;
+		int counter =0;
+		int counter_i =0;
+
+		for(int i = counter_val-1; i >= 0; i--){  //формирование вывода результата при серийном производстве
+
+			if(i>0){
+
+				if(matrix[i][w] >  matrix[i-1][w]){
+
+					while(w !=1 && w > 0/*w!=0*/){
+
+						w -= weight[i];
+
+						if(w>0){
+							counter++;
+							counter_i=i;
+						}
+					}
+					break;	//пренудительно завершаем
+				}
+			}else{
+				counter = weight_max;
+				counter_i = 0;
+			}
+		}
+
+		switch(var){
+			case 1:{
+				AnsiString s1 = MainForm->StringGrid1->Cells[0][counter_i+1] + " " + IntToStr(value[counter_i]) + "x" + IntToStr(counter);
+				MainForm->ListBox_qu_1->Items->Add(s1);
+				MainForm->Edit_res_qu_1->Text = matrix[counter_val-1][weight_max];
+				break;
+			}
+			case 2:{
+				AnsiString s1 = MainForm->StringGrid2->Cells[0][counter_i+1] + " " + IntToStr(value[counter_i]) + "x" + IntToStr(counter);
+				MainForm->ListBox_qu_2->Items->Add(s1);
+				MainForm->Edit_res_qu_2->Text = matrix[counter_val-1][weight_max];
+				break;
+			}
+			case 3:{
+				AnsiString s1 = MainForm->StringGrid3->Cells[0][counter_i+1] + " " + IntToStr(value[counter_i]) + "x" + IntToStr(counter);
+				MainForm->ListBox_qu_3->Items->Add(s1);
+				MainForm->Edit_res_qu_3->Text = matrix[counter_val-1][weight_max];
+				break;
+			}
+			case 4:{
+				AnsiString s1 = MainForm->StringGrid4->Cells[0][counter_i+1] + " " + IntToStr(value[counter_i]) + "x" + IntToStr(counter);
+				MainForm->ListBox_qu_4->Items->Add(s1);
+				MainForm->Edit_res_qu_4->Text = matrix[counter_val-1][weight_max];
+				break;
+			}
+		}
+
+	  return (matrix[counter_val-1][weight_max]);
+	}
+}
+//---------------------------------------------------------------------------
+int enumeration_method(int var, int counter_val, int weight_max){
+
+	int weight[counter_val];          // массив веса
+	int value[counter_val];          // массив ценности
+
+	int result_price =0;
+
+	//При нахождении ошибки в каком либо из столбцов (вес/цена) - занулить нужно оба (ошибка) -- ПЕРЕДЕЛАТЬ
+	//Может на этапе открытия файла сразу создавать массивы в классах???????
+
+	switch(var){
+		case 1:{
+			for(int i = 0; i < counter_val; ++i){
+				if(MainForm->StringGrid1->Cells[1][i+1] != ""){
+					weight[i] = MainForm->StringGrid1->Cells[1][i+1].ToDouble();
+				}else{
+					weight[i] = 0;
+				}
+				if(MainForm->StringGrid1->Cells[2][i+1] != ""){
+					value[i] = MainForm->StringGrid1->Cells[2][i+1].ToDouble();
+				}else{
+					value[i] = 0;//ЗАНУЛЯЕМ ОШИБКУ
+				}
+			}
+			break;
+		}
+		case 2:{
+			for(int i = 0; i < counter_val; ++i){
+				if(MainForm->StringGrid2->Cells[1][i+1] != ""){
+					weight[i] = MainForm->StringGrid2->Cells[1][i+1].ToDouble();
+				}else{
+					weight[i] = 0;
+				}
+				if(MainForm->StringGrid2->Cells[2][i+1] != ""){
+					value[i] = MainForm->StringGrid2->Cells[2][i+1].ToDouble();
+				}else{
+					value[i] = 0;//ЗАНУЛЯЕМ ОШИБКУ
+				}
+			}
+			break;
+		}
+		case 3:{
+			for(int i = 0; i < counter_val; ++i){
+				if(MainForm->StringGrid3->Cells[1][i+1] != ""){
+					weight[i] = MainForm->StringGrid3->Cells[1][i+1].ToDouble();
+				}else{
+					weight[i] = 0;
+				}
+				if(MainForm->StringGrid3->Cells[2][i+1] != ""){
+					value[i] = MainForm->StringGrid3->Cells[2][i+1].ToDouble();
+				}else{
+					value[i] = 0;//ЗАНУЛЯЕМ ОШИБКУ
+				}
+			}
+			break;
+		}
+		case 4:{
+			for(int i = 0; i < counter_val; ++i){
+				if(MainForm->StringGrid4->Cells[1][i+1] != ""){
+					weight[i] = MainForm->StringGrid4->Cells[1][i+1].ToDouble();
+				}else{
+					weight[i] = 0;
+				}
+				if(MainForm->StringGrid4->Cells[2][i+1] != ""){
+					value[i] = MainForm->StringGrid4->Cells[2][i+1].ToDouble();
+				}else{
+					value[i] = 0;//ЗАНУЛЯЕМ ОШИБКУ
+				}
+			}
+			break;
+		}
+	}
+
+
+	if(MainForm->RadioGroup2->ItemIndex == 0){  //штучный
+
+		result_price = box(weight_max, weight, value, counter_val);
+
+		switch(var){ //формирование вывода отчета в лист бох
+			case 1:{
+				//AnsiString s1 = MainForm->StringGrid1->Cells[0][save_i+1] + " " + IntToStr(value[save_i]) + "x" + IntToStr(result[save_i]);
+				MainForm->ListBox_qu_1->Items->Add("НЕ ЗНАЮ КАК СДЕЛАТЬ");
+				MainForm->Edit_res_qu_1->Text = result_price;
+				break;
+			}
+			case 2:{
+				//AnsiString s1 = MainForm->StringGrid2->Cells[0][save_i+1] + " " + IntToStr(value[save_i]) + "x" + IntToStr(result[save_i]);
+				MainForm->ListBox_qu_2->Items->Add("НЕ ЗНАЮ КАК СДЕЛАТЬ");
+				MainForm->Edit_res_qu_2->Text = result_price;
+				break;
+			}
+			case 3:{
+				//AnsiString s1 = MainForm->StringGrid3->Cells[0][save_i+1] + " " + IntToStr(value[save_i]) + "x" + IntToStr(result[save_i]);
+				MainForm->ListBox_qu_3->Items->Add("НЕ ЗНАЮ КАК СДЕЛАТЬ");
+				MainForm->Edit_res_qu_3->Text = result_price;
+				break;
+			}
+			case 4:{
+				//AnsiString s1 = MainForm->StringGrid4->Cells[0][save_i+1] + " " + IntToStr(value[save_i]) + "x" + IntToStr(result[save_i]);
+				MainForm->ListBox_qu_4->Items->Add("НЕ ЗНАЮ КАК СДЕЛАТЬ");
+				MainForm->Edit_res_qu_4->Text = result_price;
+				break;
+			}
+		}
+
+
+
+
+	}else{                                      //серийный
+
+		int *result = new int [counter_val];
+		int counter = 0;
+		int WW = 0;
+		int save_i=0;
+
+		for (int i = 0; i < counter_val; i++) {
+			WW = weight_max;
+			while (WW - weight[i] >= 0) {  //поиск повторного использования предмета СЕРИЙНОЕ ПРОИЗВОДСТВО
+				WW = WW - weight[i];
+				counter++;
+			}
+			result[i] = counter;      //max количество предметов
+			counter = 0;
+		}
+
+		for (int i = 0; i < counter_val; i++) {
+
+
+			if (value[i] * result[i] > result_price) {
+				result_price = value[i] * result[i];
+				save_i = i;
+			}
+		}
+
+
+		switch(var){ //формирование вывода отчета в лист бох
+			case 1:{
+				AnsiString s1 = MainForm->StringGrid1->Cells[0][save_i+1] + " " + IntToStr(value[save_i]) + "x" + IntToStr(result[save_i]);
+				MainForm->ListBox_qu_1->Items->Add(s1);
+				MainForm->Edit_res_qu_1->Text = result_price;
+				break;
+			}
+			case 2:{
+				AnsiString s1 = MainForm->StringGrid2->Cells[0][save_i+1] + " " + IntToStr(value[save_i]) + "x" + IntToStr(result[save_i]);
+				MainForm->ListBox_qu_2->Items->Add(s1);
+				MainForm->Edit_res_qu_2->Text = result_price;
+				break;
+			}
+			case 3:{
+				AnsiString s1 = MainForm->StringGrid3->Cells[0][save_i+1] + " " + IntToStr(value[save_i]) + "x" + IntToStr(result[save_i]);
+				MainForm->ListBox_qu_3->Items->Add(s1);
+				MainForm->Edit_res_qu_3->Text = result_price;
+				break;
+			}
+			case 4:{
+				AnsiString s1 = MainForm->StringGrid4->Cells[0][save_i+1] + " " + IntToStr(value[save_i]) + "x" + IntToStr(result[save_i]);
+				MainForm->ListBox_qu_4->Items->Add(s1);
+				MainForm->Edit_res_qu_4->Text = result_price;
+				break;
+			}
+		}
+
+		delete[] result;
+	}
+
+	return result_price;
+}
+
+int box(int W, int *w, int *v, int n)
+{
+
+    // Base Case
+    if (n == 0 || W == 0) {
+        return 0;
+    }
+
+    // If weight of the nth item is more
+    // than Knapsack capacity W, then
+    // this item cannot be included
+    // in the optimal solution
+    if (w[n - 1] > W) {
+		return (box(W, w, v, n - 1));
+    }
+
+
+    // Return the maximum of two cases:
+    // (1) nth item included
+    // (2) not included
+    else {
+
+		int max_val = max(v[n - 1] + box(W - w[n - 1], w, v, n - 1), box(W, w, v, n - 1));
+        return (max_val);
+    }
+}
+
+
+//---------------------------------------------------------------------------
+
+void open_file(Quarter &quart,int var){
+
+	//определение типа выбранного файла
+	//открытие выбранного типа файла
+	//получение данных из файла
+	//закрытие файла
+
+	AnsiString buf;
+	AnsiString exit_row;
+
+	MainForm->OpenDialog->Title = "Открыть файл";
+	MainForm->OpenDialog->FileName = "";// на случай отказа
+
+	if(quart.get_flag() == true){   //если файл был открыт ранее удаляем данные из стринггрид
+		switch(var){
+			case 1:{MainForm->StringGrid1->RowCount = 1;break;}
+			case 2:{MainForm->StringGrid2->RowCount = 1;break;}
+			case 3:{MainForm->StringGrid3->RowCount = 1;break;}
+			case 4:{MainForm->StringGrid4->RowCount = 1;break;}
+		}
+		quart.set_flag(false);
+		quart.set_row(0);
+	}
+
+	if(MainForm->OpenDialog->Execute()) {
+		quart.set_address(MainForm->OpenDialog->FileName);  //получаем адресс
+	}
+
+	if(MainForm->OpenDialog->FilterIndex == 1){  //открыт txt файл
+
+		string sentence_1 = "";
+		string substr = "название";
+		string word = "";
+		string name = "";
+
+		bool flag_end_file = true;
+		bool flag_second_col = false;
+
+		int counter_ = 0;
+		int a = 0;
+		int b = 0;
+		int c = 0;
+
+		AnsiString name_file = ExtractFileName(MainForm->OpenDialog->FileName);
+
+		switch(var){
+			case 1:{MainForm->Label1->Caption = "Название файла: " + name_file; break;}
+			case 2:{MainForm->Label4->Caption = "Название файла: " + name_file;break;}
+			case 3:{MainForm->Label8->Caption = "Название файла: " + name_file;break;}
+			case 4:{MainForm->Label12->Caption = "Название файла: " + name_file;break;}
+		}
+
+
+		ifstream user_file(quart.get_file_addr().c_str());      //создаем переменную под файл и открываем файл
+
+		if (!user_file.is_open()) {                         	// если файл не получилось открыть сообщить об ошибке
+			ShowMessage("Ошибка, Файл не может быть открыт!");
+		}
+		else{                                                   //если файл успешно открыт
+
+			quart.set_flag(true);                               //если файл успешно открыт
+			quart.set_type_flag(false);                         //тип файла тхт
+
+			getline(user_file, sentence_1, '\n');		        //считываение полного предложения до символа конца строки
+
+			if (sentence_1.find(substr) != std::string::npos) { //если в считанном предложении есть ключевые слова, продолжаем  КОСТЫЛЬ
+
+				quart.inc_row();
+				switch(var){
+					case 1:{MainForm->StringGrid1->RowCount += 1;break;}
+					case 2:{MainForm->StringGrid2->RowCount += 1;break;}
+					case 3:{MainForm->StringGrid3->RowCount += 1;break;}
+					case 4:{MainForm->StringGrid4->RowCount += 1;break;}
+				}
+
+				flag_end_file = false;
+			}
+
+			while (flag_end_file != true) {
+
+				getline(user_file, sentence_1, '\n');           //считывание строк начиная со 2 до конца файла
+				name="";
+
+				if (sentence_1 == "") {                         //если строка пустая завершаем считывание данных из файла
+					flag_end_file = true;
+				}
+
+				while (sentence_1 != "") {
+
+					if (sentence_1[0] == '\t' || sentence_1[0] == ' ') {  //если первй символ в строке символ табуляции или пробела то удаляем его
+						sentence_1.erase(0, 1);
+						counter_++;                             //счетчик количества
+					}
+
+					b = sentence_1.find_first_of("\t");         //поиск первого вхождения символа в строке, и возврат его позиции
+					c = sentence_1.find_first_of(" ");
+
+					if ((b < c && b != -1) || c ==-1) {
+						word = sentence_1.substr(a, b);             //копируем подстроку длинной (а,б)
+					}
+
+					if((c < b && c != -1) || b == -1){
+						word = sentence_1.substr(a, c);             //копируем подстроку длинной (а,c)
+					}
+					if (c == -1 && b == -1) {
+						word = sentence_1;
+					}
+
+
+					if (word != "") {                           //если подстрока не пустая выводим ее
+
+						bool flag_alphabet = false;             //поиск символов алфавита в подстроке
+
+						flag_alphabet = alphabet_check(word);
+
+						if (flag_alphabet == true) {
+							counter_ = 0;
+						}
+
+						if (counter_ == 0 && flag_alphabet ==true) { //первый столбец
+							if(name == ""){
+								name = word;
+							}else{
+								name += " " + word;
+							}
+
+							switch(var){
+									case 1:{MainForm->StringGrid1->Cells[0][quart.get_row()]= name.c_str();break;}
+									case 2:{MainForm->StringGrid2->Cells[0][quart.get_row()]= name.c_str();break;}
+									case 3:{MainForm->StringGrid3->Cells[0][quart.get_row()]= name.c_str();break;}
+									case 4:{MainForm->StringGrid4->Cells[0][quart.get_row()]= name.c_str();break;}
+							}
+
+							counter_ = 0;
+						}
+						if (counter_ >= 1 && flag_second_col == false) {  //второй столбец
+
+							switch(var){
+									case 1:{MainForm->StringGrid1->Cells[1][quart.get_row()]= word.c_str();break;}
+									case 2:{MainForm->StringGrid2->Cells[1][quart.get_row()]= word.c_str();break;}
+									case 3:{MainForm->StringGrid3->Cells[1][quart.get_row()]= word.c_str();break;}
+									case 4:{MainForm->StringGrid4->Cells[1][quart.get_row()]= word.c_str();break;}
+							}
+
+							flag_second_col = true;
+							counter_ = 0;
+						}
+						if (counter_ > 1 && flag_second_col == true) {//третий столбец
+
+                            switch(var){
+									case 1:{MainForm->StringGrid1->Cells[2][quart.get_row()]= word.c_str();break;}
+									case 2:{MainForm->StringGrid2->Cells[2][quart.get_row()]= word.c_str();break;}
+									case 3:{MainForm->StringGrid3->Cells[2][quart.get_row()]= word.c_str();break;}
+									case 4:{MainForm->StringGrid4->Cells[2][quart.get_row()]= word.c_str();break;}
+							}
+
+
+							quart.inc_row();
+							switch(var){
+								case 1:{MainForm->StringGrid1->RowCount += 1;break;}
+								case 2:{MainForm->StringGrid2->RowCount += 1;break;}
+								case 3:{MainForm->StringGrid3->RowCount += 1;break;}
+								case 4:{MainForm->StringGrid4->RowCount += 1;break;}
+							}
+
+							flag_second_col = false;
+							counter_ = 0;
+						}
+					}
+
+					if ((b < c && b != -1) || c == -1) {
+						sentence_1.erase(a, b);                     //вырезаем подстроку из строки
+					}
+					if ((c < b && c != -1) || b == -1) {
+						sentence_1.erase(a, c);                     //вырезаем подстроку из строки
+					}
+					if (c == -1 && b == -1) {
+						sentence_1 ="";                             //зануляем предложение, так как в нем не осалось не использованой информации
+					}
+				}
+			}
+
+			quart.dec_row();
+			switch(var){//Убираем лишнюю строку
+				case 1:{MainForm->StringGrid1->RowCount -= 1;break;}
+				case 2:{MainForm->StringGrid2->RowCount -= 1;break;}
+				case 3:{MainForm->StringGrid3->RowCount -= 1;break;}
+				case 4:{MainForm->StringGrid4->RowCount -= 1;break;}
+			}
+
+			user_file.close(); // закрываем файл
+		}
+	}
+
+	if(MainForm->OpenDialog->FilterIndex == 2||MainForm->OpenDialog->FilterIndex == 3){    //открыт excel   КОСТЫЛЬ С 3 ТИПОМ ДАННЫХ ИСПРАВВВВВВВВВВВВВВВВВВВВВВВВВВВИИИИИИИИИИИИИИИИИИТТТТТТТТТТТТТТТТТТТТЬЬЬЬЬЬЬЬЬЬ
+
+		if(quart.get_file_addr() !=""){
+
+			try{ //попытка создания подключения к экселю
+				quart.set_quart(CreateOleObject("EXCEL.Application")); //пытаемся подключиться к экселю
+
+				quart.set_flag(true);
+				quart.set_type_flag(true);      //тип файла  1-excel/calc
+
+				AnsiString name_file = ExtractFileName(MainForm->OpenDialog->FileName);
+
+				switch(var){
+					case 1:{MainForm->Label1->Caption = "Название файла: " + name_file; break;}
+					case 2:{MainForm->Label4->Caption = "Название файла: " + name_file;break;}
+					case 3:{MainForm->Label8->Caption = "Название файла: " + name_file;break;}
+					case 4:{MainForm->Label12->Caption = "Название файла: " + name_file;break;}
+				}
+			}
+			catch(...){
+				ShowMessage("Ошибка, невозможно открыть Microsoft Excel");
+				quart.set_flag(false);
+			}
+
+			if(quart.get_flag()==true){
+
+				quart.get_quart().OlePropertyGet("Workbooks").OlePropertyGet("Open",WideString(quart.get_file_addr()));
+
+				do{
+					quart.inc_row();
+
+					switch(var){
+						case 1:{MainForm->StringGrid1->RowCount += 1;break;}
+						case 2:{MainForm->StringGrid2->RowCount += 1;break;}
+						case 3:{MainForm->StringGrid3->RowCount += 1;break;}
+						case 4:{MainForm->StringGrid4->RowCount += 1;break;}
+					}
+
+					for(int i = 1; i<=3;i++){
+
+						buf = quart.get_quart().OlePropertyGet("Cells", quart.get_row()+1, i);
+
+						switch(var){
+							case 1:{
+								MainForm->StringGrid1->Cells[i-1][quart.get_row()] = buf;
+								exit_row = MainForm->StringGrid1->Cells[0][quart.get_row()];
+								break;
+							}
+							case 2:{
+								MainForm->StringGrid2->Cells[i-1][quart.get_row()] = buf;
+								exit_row = MainForm->StringGrid2->Cells[0][quart.get_row()];
+								break;
+							}
+							case 3:{
+								MainForm->StringGrid3->Cells[i-1][quart.get_row()] = buf;
+								exit_row = MainForm->StringGrid3->Cells[0][quart.get_row()];
+								break;
+							}
+							case 4:{
+								MainForm->StringGrid4->Cells[i-1][quart.get_row()] = buf;
+								exit_row = MainForm->StringGrid4->Cells[0][quart.get_row()];
+								break;
+							}
+						}
+					}
+				}while(exit_row != ""); //определяет следующую строку после последней строки с данными
+
+				switch(var){//Убираем лишнюю строку
+					case 1:{MainForm->StringGrid1->RowCount -= 1;break;}
+					case 2:{MainForm->StringGrid2->RowCount -= 1;break;}
+					case 3:{MainForm->StringGrid3->RowCount -= 1;break;}
+					case 4:{MainForm->StringGrid4->RowCount -= 1;break;}
+				}
+				quart.dec_row();
+				quart.exit_Excel();// закрываем excel
+			}
+		}
+	}
+ }
+
+void save_file(){
+
+	//запрос на локацию
+	//запрос имя файла
+	//запрос на тип файла
+
+	AnsiString type_metod;
+
+	if(MainForm->RadioGroup2->ItemIndex == 0){   //штучный
+		type_metod = "Штучное производство\n";
+	}else{  									 //серийный
+		type_metod = "Серийное производство\n";
+    }
+
+	AnsiString name_save_file = "Отчет-оптимальный_набор_заказов";      //по умолчанию
+	AnsiString type_file =".txt";   									//по умолчанию
+	AnsiString URL = "C:\\";
+	AnsiString file;
+
+	MainForm->SaveDialog->Title = "Сохранение файла";
+
+	MainForm->SaveDialog->DefaultExt = type_file;                       //по умолчанию тхт
+	MainForm->SaveDialog->InitialDir = URL;                             //по умолчанию диск С
+	MainForm->SaveDialog->FileName = name_save_file;                    //по умолчанию имя файла
+
+	if(MainForm->SaveDialog->Execute()) {
+
+		if(MainForm->SaveDialog->FilterIndex == 1){
+			MainForm->SaveDialog->FileName += type_file;
+			//создаем файл
+			//проверяем на наличие результата
+			//если результат есть считываем начиная с кваратала 1 по 4
+			//формируем либо цельную строку, либо по строчно в файл
+
+			file = URL + name_save_file + type_file;
+
+			ofstream report_file;
+			report_file.open(file.c_str());   //открываем файл для записи
+
+			if(quarter_1.get_flag() == true){
+				AnsiString str;
+				str ="____I_Квартал____\n";
+				str += type_metod;
+
+				int index = MainForm->ListBox_qu_1->Count;  //получаем количество строк
+				for(int i =0; i < index;i++){
+				   AnsiString buf = MainForm->ListBox_qu_1->Items->Strings[i];
+				   str += buf + "\n";
+				}
+
+				str += "Максимальная возможная прибыль = " + MainForm->Edit_res_qu_1->Text + "\n";
+				report_file << str;
+			}
+			if(quarter_2.get_flag() == true){
+				AnsiString str;
+				str ="\n____II_Квартал____\n";
+				str += type_metod;
+
+				int index = MainForm->ListBox_qu_2->Count;  //получаем количество строк
+				for(int i =0; i < index;i++){
+				   AnsiString buf = MainForm->ListBox_qu_2->Items->Strings[i];
+				   str += buf + "\n";
+				}
+
+				str += "Максимальная возможная прибыль = " + MainForm->Edit_res_qu_2->Text + "\n";
+				report_file << str;
+			}
+			if(quarter_3.get_flag() == true){
+				AnsiString str;
+				str ="\n____III_Квартал____\n";
+				str += type_metod;
+
+				int index = MainForm->ListBox_qu_3->Count;  //получаем количество строк
+				for(int i =0; i < index;i++){
+				   AnsiString buf = MainForm->ListBox_qu_3->Items->Strings[i];
+				   str += buf + "\n";
+				}
+
+				str += "Максимальная возможная прибыль = " + MainForm->Edit_res_qu_3->Text + "\n";
+				report_file << str;
+			}
+			if(quarter_4.get_flag() == true){
+				AnsiString str;
+				str ="____IV_Квартал____\n";
+				str += type_metod;
+
+				int index = MainForm->ListBox_qu_4->Count;  //получаем количество строк
+				for(int i =0; i < index;i++){
+				   AnsiString buf = MainForm->ListBox_qu_4->Items->Strings[i];
+				   str += buf + "\n";
+				}
+
+				str += "Максимальная возможная прибыль = " + MainForm->Edit_res_qu_4->Text + "\n";
+				report_file << str;
+			}
+
+			AnsiString str_1 =  "\nСуммарная прибыль: " + MainForm->Edit_result->Text;
+
+			report_file << str_1;
+			report_file.close();
+		}
+
+		if(MainForm->SaveDialog->FilterIndex == 2 || MainForm->SaveDialog->FilterIndex == 3){
+
+			type_file = ".xlsx";
+
+			//MainForm->SaveDialog->FileName += type_file;
+
+			file = URL + name_save_file + type_file;
+
+			AnsiString row_1 = "Название";
+			AnsiString row_2 = "Количество";
+
+			Variant report_file_1;
+
+			report_file_1 = CreateOleObject("Excel.Application");    //создаем объект
+			report_file_1.OlePropertyGet("Workbooks").OlePropertyGet("Add");
+
+
+			//report_file_1.OlePropertyGet("WorkBooks",1).OleProcedure(L"SaveAs",WideString(L"C:\\MyTest.xlsx"));  РАБОТАЕТ
+
+
+
+
+
+
+
+
+
+
+
+
+			//report_file.OlePropertyGet("WorkBooks",1).OleProcedure("SaveAs",file); //сохраняем по адрессу
+			//report_file.OlePropertyGet("WorkBooks",1).OleProcedure("SaveAs");
+
+			//mExcel.OlePropertyGet("WorkBooks", 1).OleProcedure("SaveAs","D:\MyTest");
+			//создаем файл Ексель
+			//открываем файл
+
+			if(quarter_1.get_flag() == true){
+
+			}
+			if(quarter_2.get_flag() == true){
+
+			}
+			if(quarter_3.get_flag() == true){
+
+			}
+			if(quarter_4.get_flag() == true){
+
+			}
+
+			report_file_1.OleProcedure("Quit");
+			report_file_1 = Unassigned;
+			//закрываем файл
+		}
+	}
+}
+
+
+
+void edit_file(int var){
+//переход в спец форму
+//определение типа файла
+//редактирование данных
+//сохранение в файл
+
+}
+
+
+bool alphabet_check(string str){
+
+	string letters_1 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	string letters_2 = "абвгдеёжщийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
+
+	if (str.find_first_of(letters_1) != std::string::npos || str.find_first_of(letters_2) != std::string::npos) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool max_val_check(int var){
+
+	int value =0;
+	switch(var){
+		case 1:{value = MainForm->Edit_qu_1->Text.ToDouble();break;}
+		case 2:{value = MainForm->Edit_qu_2->Text.ToDouble();break;}
+		case 3:{value = MainForm->Edit_qu_3->Text.ToDouble();break;}
+		case 4:{value = MainForm->Edit_qu_4->Text.ToDouble();break;}
+	}
+
+	if(value >0 && value <=91){
+		return (true);
+	}else{
+		return (false);
+	}
+
+}
+
+void Clear_form_data(){
+
+	if(quarter_1.get_flag() == true){
+	   MainForm->Edit_res_qu_1->Text = 0;
+	   MainForm->ListBox_qu_1->Items->Clear();
+	}
+	if(quarter_2.get_flag() == true){
+	   MainForm->Edit_res_qu_2->Text = 0;
+	   MainForm->ListBox_qu_2->Items->Clear();
+	}
+	if(quarter_3.get_flag() == true){
+	   MainForm->Edit_res_qu_3->Text = 0;
+	   MainForm->ListBox_qu_3->Items->Clear();
+	}
+	if(quarter_4.get_flag() == true){
+	   MainForm->Edit_res_qu_4->Text = 0;
+	   MainForm->ListBox_qu_4->Items->Clear();
+	}
+
+//обнуление данных из эдитов
+//удаление данных из ллист боксов
+//удаление данных из стринг гритов при необходимости сделать
+}
+
+//---------------------------------------------------------------------------
+void __fastcall TMainForm::Edit_qu_1KeyPress(TObject *Sender, System::WideChar &Key)
+{
+	if (Sender) {//проверка на наличие 0 при первом вводе, true -> удаляем
+		if(MainForm->Edit_qu_1->Text == "0" && MainForm->Edit_qu_1->Focused()){
+			MainForm->Edit_qu_1->Text = "";
+		}
+		if(MainForm->Edit_qu_2->Text == "0" && MainForm->Edit_qu_2->Focused()){
+			MainForm->Edit_qu_2->Text = "";
+		}
+		if(MainForm->Edit_qu_3->Text == "0" && MainForm->Edit_qu_3->Focused()){
+			MainForm->Edit_qu_3->Text = "";
+		}
+		if(MainForm->Edit_qu_4->Text == "0" && MainForm->Edit_qu_4->Focused()){
+			MainForm->Edit_qu_4->Text = "";
+		}
+	}
+
+	//корректор ввода данных
+	if(!((Key >= '0' && Key <= '9') || (Key == VK_BACK))){
+		Key = NULL;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::About1Click(TObject *Sender)
+{
+	//this->Hide();
+	second_form->Show();
+}
+//---------------------------------------------------------------------------
+

@@ -1,0 +1,24 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#include <U_Main_form.h>
+
+#pragma hdrstop
+
+#include "U_Excel_ed.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma resource "*.dfm"
+TExcel_editor *Excel_editor;
+//---------------------------------------------------------------------------
+__fastcall TExcel_editor::TExcel_editor(TComponent* Owner)
+	: TForm(Owner)
+{
+}
+//---------------------------------------------------------------------------
+void __fastcall TExcel_editor::Button1Click(TObject *Sender)
+{
+	this->Hide();
+	MainForm->Show();
+}
+//---------------------------------------------------------------------------
